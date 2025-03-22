@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alert_rules.yml:/etc/prometheus/alert_rules.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - monitoring
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ./discord.tmpl:/etc/alertmanager/discord.tmpl
+    ports:
+      - "9093:9093"
+    networks:
+      - monitoring
+
+  discord-proxy:
+    build: ./webhook-proxy
+    container_name: discord-proxy
+    ports:
+      - "5000:5000"
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge

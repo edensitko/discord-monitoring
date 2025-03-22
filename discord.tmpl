@@ -1,0 +1,14 @@
+{{ define "discord.message" }}
+{
+  "embeds": [
+    {
+      "title": "🚨 {{ .Status | toUpper }}: {{ .CommonLabels.alertname }}",
+      "description": "{{ range .Alerts }}🔸 **{{ .Annotations.summary }}**\n{{ .Annotations.description }}\n**Instance:** {{ .Labels.instance }}\n{{ end }}",
+      "color": {{ if eq .Status "firing" }}16711680{{ else }}65280{{ end }},
+      "footer": {
+        "text": "נשלח מ־Prometheus דרך Alertmanager"
+      }
+    }
+  ]
+}
+{{ end }}
